@@ -24,15 +24,18 @@ min-height:3.2rem;
 font-size:1.1rem;
 padding:0.6rem;
 }
-.buttons {
-margin-top:0.5rem;
+.hint {
+margin-top:0.4rem;
+font-style:italic;
+opacity:0.9;
+}
+.feedback {
+margin-top:0.4rem;
+font-weight:bold;
 }
 button {
 font-size:1rem;
 padding:0.4rem 0.6rem;
 cursor:pointer;
-}
-.feedback {
-margin-top:0.4rem;
-font-weight:bold;
+margin-right:0.5rem;
 }

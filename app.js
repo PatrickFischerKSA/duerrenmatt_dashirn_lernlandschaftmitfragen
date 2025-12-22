@@ -1,41 +1,39 @@
 const audio = document.getElementById("bgAudio");
 const audioBtn = document.getElementById("audioBtn");
-let audioReady = false;
+let audioOn = false;
 
-// robust audio init: must be triggered directly by user click
+// very strict browser-safe audio toggle
 audioBtn.addEventListener("click", () => {
-  if (!audioReady) {
+  if (!audioOn) {
     audio.volume = 0.15;
     audio.play().then(() => {
-      audio.pause();
-      audioReady = true;
-      toggleAudio();
+      audioOn = true;
     }).catch(e => {
       console.log("Audio blockiert:", e);
     });
   } else {
-    toggleAudio();
+    audio.pause();
+    audioOn = false;
   }
 });
-
-function toggleAudio() {
-  audio.paused ? audio.play() : audio.pause();
-}
 
 const questions = [
   {
     q: "Was stellt Dürrenmatt anstelle des Urknalls als Gedankenexperiment vor?",
     a: ["hirn", "reines hirn"],
+    hint: "Gleich zu Beginn ersetzt Dürrenmatt den kosmologischen Urknall durch ein Denkmodell.",
     page: 1
   },
   {
     q: "Welches Gefühl steht am Anfang der Existenz des Hirns?",
-    a: ["angst", "entsetzen"],
+    a: ["angst", "entsetzen", "urangst"],
+    hint: "Das Hirn empfindet zunächst nichts außer sich selbst.",
     page: 1
   },
   {
     q: "Warum beginnt das Hirn zu zählen?",
-    a: ["gegen angst", "zeit"],
+    a: ["gegen angst", "zeit", "zahlen"],
+    hint: "Zählen ist eine Strategie, um einem Zustand zu entkommen.",
     page: 2
   }
 ];
@@ -54,16 +52,23 @@ questions.forEach((item, i) => {
       <button data-page="${item.page}">📖 Textstelle</button>
     </div>
     <div class="feedback"></div>
+    <div class="hint"></div>
   `;
 
   const input = div.querySelector("input");
   const feedback = div.querySelector(".feedback");
+  const hintDiv = div.querySelector(".hint");
   const btn = div.querySelector("button");
 
   input.addEventListener("input", () => {
     const val = input.value.toLowerCase();
-    feedback.textContent =
-      item.a.some(a => val.includes(a)) ? "✓ richtig" : "";
+    if (item.a.some(a => val.includes(a))) {
+      feedback.textContent = "✓ richtig";
+      hintDiv.textContent = "";
+    } else {
+      feedback.textContent = "";
+      hintDiv.textContent = item.hint;
+    }
   });
 
   btn.addEventListener("click", () => {
