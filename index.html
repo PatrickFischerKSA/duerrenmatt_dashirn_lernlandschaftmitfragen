@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Dürrenmatt – Das Hirn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="overlay">
+<header>
+<h1>Friedrich Dürrenmatt – Das Hirn</h1>
+<p class="subtitle">Lernlandschaft</p>
+</header>
+
+<div class="controls">
+<input id="name" placeholder="Name">
+<button onclick="toggleAudio()">🔊 Audio</button>
+<button onclick="exportResults()">📄 Export</button>
+</div>
+
+<audio id="bgAudio" loop>
+<source src="media/audio/denken.wav" type="audio/wav">
+</audio>
+
+<iframe src="media/pdf/Duerrenmatt_DasHirn.pdf"></iframe>
+<div id="quiz"></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
