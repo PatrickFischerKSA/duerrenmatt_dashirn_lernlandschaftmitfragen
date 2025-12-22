@@ -1,18 +1,22 @@
 const audio = document.getElementById("bgAudio");
+const audioBtn = document.getElementById("audioBtn");
 let audioReady = false;
 
-function initAudio() {
+// robust audio init: must be triggered directly by user click
+audioBtn.addEventListener("click", () => {
   if (!audioReady) {
     audio.volume = 0.15;
     audio.play().then(() => {
       audio.pause();
       audioReady = true;
       toggleAudio();
-    }).catch(e => console.log("Audio blockiert", e));
+    }).catch(e => {
+      console.log("Audio blockiert:", e);
+    });
   } else {
     toggleAudio();
   }
-}
+});
 
 function toggleAudio() {
   audio.paused ? audio.play() : audio.pause();
@@ -37,26 +41,35 @@ const questions = [
 ];
 
 const quiz = document.getElementById("quiz");
+const pdfFrame = document.getElementById("pdfFrame");
 
 questions.forEach((item, i) => {
   const div = document.createElement("div");
   div.className = "question";
+
   div.innerHTML = `
-    <p><strong>${i+1}. ${item.q}</strong></p>
+    <p><strong>${i + 1}. ${item.q}</strong></p>
     <input type="text">
-    <button onclick="goToPage(${item.page})">📖 Textstelle</button>
+    <div class="buttons">
+      <button data-page="${item.page}">📖 Textstelle</button>
+    </div>
     <div class="feedback"></div>
   `;
+
   const input = div.querySelector("input");
-  const fb = div.querySelector(".feedback");
-  input.oninput = () => {
+  const feedback = div.querySelector(".feedback");
+  const btn = div.querySelector("button");
+
+  input.addEventListener("input", () => {
     const val = input.value.toLowerCase();
-    fb.textContent = item.a.some(a => val.includes(a)) ? "✓ richtig" : "";
-  };
+    feedback.textContent =
+      item.a.some(a => val.includes(a)) ? "✓ richtig" : "";
+  });
+
+  btn.addEventListener("click", () => {
+    pdfFrame.src = `media/pdf/Duerrenmatt_DasHirn.pdf#page=${item.page}`;
+    pdfFrame.scrollIntoView({ behavior: "smooth" });
+  });
+
   quiz.appendChild(div);
 });
-
-function goToPage(page) {
-  document.querySelector("iframe").src =
-    `media/pdf/Duerrenmatt_DasHirn.pdf#page=${page}`;
-}
