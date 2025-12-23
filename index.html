@@ -1,31 +1,29 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>Friedrich Dürrenmatt – Das Hirn</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Dürrenmatt – Das Hirn | Lernlandschaft</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <div class="overlay">
-<header>
-<h1>Friedrich Dürrenmatt – Das Hirn</h1>
-<p>Lernlandschaft</p>
-</header>
 
-<div class="controls">
-<input id="name" placeholder="Name">
-<button id="audioBtn">🔊 Audio</button>
-<button id="resetBtn">↺ Reset</button>
-<button id="exportBtn">📄 Export</button>
-</div>
+  <header>
+    <h1>Friedrich Dürrenmatt – Das Hirn</h1>
+    <p>Lernlandschaft – Vollversion (ohne Snippets)</p>
+  </header>
 
-<audio id="bgAudio" loop preload="auto">
-<source src="media/audio/denken.wav" type="audio/wav">
-</audio>
+  <div class="controls">
+    <input id="name" placeholder="Name">
+    <button id="resetBtn">↺ Reset</button>
+    <button id="exportBtn">📄 Export</button>
+  </div>
 
-<iframe id="pdfFrame" src="media/pdf/Duerrenmatt_DasHirn.pdf"></iframe>
+  <iframe id="pdfFrame" src="media/pdf/Duerrenmatt_DasHirn.pdf"></iframe>
 
-<div id="quiz"></div>
+  <div id="quiz"></div>
+
 </div>
 
 <script src="app.js"></script>
