@@ -1,5 +1,5 @@
 // ======================
-// Normalisierung (robust)
+// Normalisierung
 // ======================
 function norm(s) {
   return (s || "")
@@ -12,35 +12,27 @@ function norm(s) {
 }
 
 // ======================
-// Semantische Synonyme
+// Synonyme (thematisch)
 // ======================
 const SYNONYMS = {
   angst: ["angst", "furcht", "entsetzen", "panik", "bedroh", "schrecken"],
   hirn: ["hirn", "gehirn", "bewusstsein", "geist", "denken"],
-  gegenueber: ["gegenuber", "anderes", "du", "welt", "aussenwelt"],
-  ordnung: ["ordnung", "struktur", "gesetz", "system", "regel"],
-  zeit: ["zeit", "dauer", "abfolge", "rhythmus", "folge"],
-  musik: ["musik", "klang", "melodie", "rhythmus", "takt"],
-  ich: ["ich", "selbst", "selbstbewusstsein", "identitat"],
-  tod: ["tod", "sterben", "sterblichkeit", "vergehen"],
-  sinn: ["sinn", "bedeutung", "antwort", "erlosung"],
-  auschwitz: ["auschwitz", "vernichtung", "lager", "holocaust"]
+  gegenueber: ["gegenuber", "du", "anderes", "welt", "aussenwelt"],
+  ordnung: ["ordnung", "struktur", "gesetz", "system"],
+  zeit: ["zeit", "dauer", "abfolge", "rhythmus"],
+  musik: ["musik", "klang", "melodie", "takt"],
+  ich: ["ich", "selbst", "selbstbewusstsein"],
+  tod: ["tod", "sterben", "sterblichkeit"],
+  sinn: ["sinn", "bedeutung", "antwort"],
+  auschwitz: ["auschwitz", "vernichtung", "holocaust"]
 };
-
-function semanticHits(text) {
-  let hits = 0;
-  Object.values(SYNONYMS).forEach(group => {
-    if (group.some(w => text.includes(w))) hits++;
-  });
-  return hits;
-}
 
 function containsAny(text, list) {
   return list.some(w => text.includes(w));
 }
 
 // ======================
-// Fragen
+// FRAGEN (40)
 // ======================
 const questions = [
   { q: "Was setzt Dürrenmatt an den Anfang seines Gedankengangs?", page: 1,
@@ -48,7 +40,7 @@ const questions = [
     hint: "Er ersetzt den kosmologischen Ursprung durch ein Denkmodell." },
 
   { q: "Warum existiert das Hirn zunächst ohne Außenwelt?", page: 1,
-    groups: [["allein","isoliert","kein aussen"],["nur","rein"],["hirn","bewusstsein"]],
+    groups: [["allein","isoliert","kein aussen"],["hirn","bewusstsein"]],
     hint: "Am Anfang gibt es nur das Hirn selbst – kein Außen." },
 
   { q: "Welches Grundgefühl prägt den Beginn des Denkens?", page: 1,
@@ -56,7 +48,7 @@ const questions = [
     hint: "Ein negatives Grundgefühl dominiert den Anfang." },
 
   { q: "Warum ist das Alleinsein des Hirns problematisch?", page: 1,
-    groups: [["kein gegenuber","kein du"],["angst","bedrohlich"]],
+    groups: [["kein gegenuber","kein du"],["angst","bedroh"]],
     hint: "Ohne Gegenüber kippt Existenz in Angst." },
 
   { q: "Wie entstehen die ersten Impulse im Hirn?", page: 2,
@@ -72,18 +64,22 @@ const questions = [
     hint: "Zeit entsteht aus Abfolge und Wiederholung." },
 
   { q: "Welche Funktion übernimmt das Gedächtnis?", page: 3,
-    groups: [["gedachtnis","erinnerung"],["festhalten","ordnen"]],
+    groups: [["gedachtnis","erinnerung"],["ordnen","festhalten"]],
     hint: "Gedächtnis ordnet und bewahrt Abfolgen." },
 
   { q: "Warum beginnt das Hirn zu zählen?", page: 3,
-    groups: [["zahlen","zaehlen"],["angst","beruhigen","kontrolle"]],
+    groups: [["zahlen","zaehlen"],["angst","kontrolle"]],
     hint: "Zählen schafft Ordnung gegen Angst." },
 
   { q: "Was geschieht, wenn das Zählen endet?", page: 3,
     groups: [["angst","furcht"],["ruckkehr","wieder"]],
     hint: "Mit dem Ende der Ordnung kehrt Angst zurück." },
 
-  // … (11–40 bleiben unverändert inhaltlich; Logik gilt für alle)
+  // … Fragen 11–39 unverändert wie zuvor …
+
+  { q: "Warum bezeichnet Dürrenmatt Auschwitz als undenkbar?", page: 18,
+    groups: [["auschwitz"],["undenkbar","unvorstellbar","grenze"]],
+    hint: "Auschwitz erscheint als Grenze des Denkens." }
 ];
 
 // ======================
@@ -122,15 +118,22 @@ questions.forEach((item, i) => {
       return;
     }
 
-    const strong =
-      item.groups.flat().some(w => val.includes(w));
+    // Treffer in relevanten Gruppen
+    const groupHits = item.groups.map(g => g.some(w => val.includes(w)));
+    const hitCount = groupHits.filter(Boolean).length;
 
-    const sem = semanticHits(val);
+    // Synonymtreffer NUR innerhalb der Gruppen
+    let synonymHit = false;
+    item.groups.flat().forEach(k => {
+      if (SYNONYMS[k] && SYNONYMS[k].some(w => val.includes(w))) {
+        synonymHit = true;
+      }
+    });
 
-    const groupHit =
-      item.groups.every(g => containsAny(val, g));
-
-    const ok = strong || sem >= 2 || groupHit;
+    // Regel:
+    // ✔ mind. 2 Gruppen ODER
+    // ✔ 1 Gruppe + passendes Synonym
+    const ok = hitCount >= 2 || (hitCount >= 1 && synonymHit);
 
     if (ok) {
       feedback.textContent = "✓ richtig";
@@ -152,11 +155,17 @@ questions.forEach((item, i) => {
   quiz.appendChild(div);
 });
 
+// ======================
+// PDF-Navigation
+// ======================
 function goToPage(page) {
   pdfFrame.src = `media/pdf/Duerrenmatt_DasHirn.pdf#page=${page}`;
   pdfFrame.scrollIntoView({ behavior: "smooth" });
 }
 
+// ======================
+// Reset & Export
+// ======================
 resetBtn.addEventListener("click", () => {
   if (!confirm("Alle Antworten wirklich löschen?")) return;
   document.querySelectorAll(".question input").forEach(i => i.value = "");
